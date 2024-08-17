@@ -1,6 +1,8 @@
-from django.shortcuts import render
-from .forms import PasswordForm
+from django.shortcuts import render, redirect
 from .models import Accounts
+from django.http import HttpResponseRedirect
+from django.http import HttpResponse
+
 
 # Create your views here.
 def landing_page(request):
@@ -12,22 +14,27 @@ def data_entry(request):
 def dash_board(request):
     return render(request, 'DashBoard.html')
 
-def password_verification(request):
-    if request.method == 'POST':
-        form = PasswordForm(request.POST)
-        if form.is_valid():
-            password = form.cleaned_data['password']
-            account = Accounts.objects.get(id=1)  # Replace with your logic
-            if account.check_password(password):
-                # Password is correct
-                return render(request, 'password_verification/success.html')
-            else:
-                # Password is incorrect
-                return render(request, 'password_verification/fail.html')
+def password_verify_link(request):
+    return render(request, 'password_verify_link.html')
+
+
+def password_verify(request):
+    password = request.POST.get('password')
+    # Check if password matches
+    account = Accounts.objects.get(id=1)  # Replace with your logic
+
+    if account.check_password(password):
+        # Redirect to the right page if verification was successful
+        current_url = request.META['HTTP_REFERER']
+        if 'form=data_entry' in current_url:
+            print("Redirecting")
+            return HttpResponseRedirect('DataEntry')        
+        elif 'form=dashboard' in current_url:
+            print("Redirecting")
+            return HttpResponseRedirect('DashBoard')
         else:
-            # Form is not valid
-            return render(request, 'password_verification/form.html', {'form': form})
+            return HttpResponse('Invalid form', status = 401)
     else:
-        # GET request
-        form = PasswordForm()
-        return render(request, 'password_verification/form.html', {'form': form})
+        return HttpResponse('Invalid password', status = 401)
+    
+
