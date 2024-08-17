@@ -18,10 +18,48 @@
 
     </div>
     <p>Data Entry</p>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
+    <form method="POST" onSubmit="event.preventDefault();">
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email"><br>
+        <label for="task">Task:</label><br>
+        <input type="text" id="task" name="task"><br>
+        <label for="due_by">Due By:</label><br>
+        <input type="datetime-local" id="due_by" name="due_by"><br>
+        <label for="priority">Priority:</label><br>
+        <select id="priority" name="priority">
+            <option value="1">Low</option>
+            <option value="2">Medium</option>
+            <option value="3">High</option>
+        </select><br>
+        <label for="is_urgent">Is Urgent:</label><br>
+        <input type="checkbox" id="is_urgent" name="is_urgent"><br><br>
         <button type="submit">Submit</button>
     </form>
+    <script>
+        const form = document.querySelector('form');
+        form.addEventListener('submit', async e => {
+            e.preventDefault();
+            try {
+                const res = await fetch('/DataEntry_add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(Object.fromEntries(
+                        new FormData(form).entries()
+                    ))
+                });
+                if (res.ok) {
+                    alert('Task added');
+                    form.reset();
+                } else {
+                    alert('Error adding task');
+                }
+            } catch (e) {
+                alert(e.message);
+            }
+        });
+    </script>
 </body>
 </html>

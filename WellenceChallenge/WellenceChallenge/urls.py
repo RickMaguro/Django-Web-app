@@ -25,7 +25,7 @@ urlpatterns = [
     path('DashBoard', views.dash_board, name='dash_board'),
     path('password_verify_link', views.password_verify_link, name='password_verify_link'),
     path('password_verify', views.password_verify, name='password_verify'),
-
+    path('DataEntry_add', views.data_entry_add, name='data_entry_add'),
 ]
 
 

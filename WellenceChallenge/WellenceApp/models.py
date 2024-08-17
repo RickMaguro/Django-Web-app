@@ -13,14 +13,20 @@ class Accounts(models.Model):
         return check_password(password, self.password)
 
 class Tasks(models.Model):
-    MY_CHOICES = [
+    id = models.IntegerField(primary_key=True)
+    PRIORITY_CHOICES = [
         (1, 'Low'),
         (2, 'Medium'),
         (3, 'High'),
     ]
-    userEmail = models.ForeignKey(Accounts, on_delete=models.CASCADE)
+
+    email = models.EmailField()
     task = models.CharField(max_length=255)
     due_by = models.DateTimeField()
-    priority = models.IntegerField(choices=MY_CHOICES, default=1)
+    priority = models.IntegerField(choices=PRIORITY_CHOICES, default=1)
     is_urgent = models.BooleanField(default=False)
+
+
+
+
 
