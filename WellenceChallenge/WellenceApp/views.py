@@ -1,8 +1,12 @@
 from django.shortcuts import render
 from .models import Accounts, Tasks
 from django.http import JsonResponse
-import datetime
 import json
+
+from django.db.models import Count
+from datetime import datetime, timedelta
+from slick_reporting.views import *
+from slick_reporting.fields import *
 
 # Create your views here.
 def landing_page(request):
@@ -73,3 +77,23 @@ def data_entry_add(request):
 
 
 
+class TasksDueReport(ReportView):
+    report_model = Tasks
+    date_field = 'due_by'
+    group_by = 'due_by'
+    columns = [
+        'due_by',
+        ComputationField.create(Count, 'id', verbose_name='Number of Tasks Due')
+    ]    
+    chart_settings = [
+        Chart(
+            'Tasks Due in Next 30 Days',
+            Chart.LINE,
+            data_source=['id'],
+            title_source=['due_by']
+        )
+    ]
+    def get_queryset(self):
+        today = datetime.today().date()
+        next_30_days = today + timedelta(days=30)
+        return super().get_queryset().filter(due_date__range=[today, next_30_days])
