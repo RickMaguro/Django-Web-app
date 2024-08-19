@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Accounts, Tasks
+from WellenceApp.models import Accounts , Tasks
 from django.http import JsonResponse
 import json
 
@@ -7,6 +7,7 @@ from django.db.models import Count
 from datetime import datetime, timedelta
 from slick_reporting.views import *
 from slick_reporting.fields import *
+from django.utils import timezone
 
 # Create your views here.
 def landing_page(request):
@@ -80,10 +81,10 @@ def data_entry_add(request):
 class TasksDueReport(ReportView):
     report_model = Tasks
     date_field = 'due_by'
-    group_by = 'due_by'
+    # group_by = 'due_by'
     columns = [
         'due_by',
-        ComputationField.create(Count, 'id', verbose_name='Number of Tasks Due')
+        ComputationField.create(Count, 'id', 'task',verbose_name='Number of Tasks Due')
     ]    
     chart_settings = [
         Chart(
@@ -94,6 +95,82 @@ class TasksDueReport(ReportView):
         )
     ]
     def get_queryset(self):
-        today = datetime.today().date()
+        today = timezone.now().date()
         next_30_days = today + timedelta(days=30)
-        return super().get_queryset().filter(due_date__range=[today, next_30_days])
+        return super().get_queryset().filter(due_by__range=[today, next_30_days], is_urgent=True)
+    
+
+
+
+
+
+
+
+
+
+class TasksPriorityDuePieChart(ReportView):
+    report_model = Tasks
+    date_field = 'due_by'
+    group_by = 'priority'
+    columns = [
+        'priority',
+        ComputationField.create(Count, 'id', 'task',verbose_name='Number of Tasks Due')
+    ]    
+    chart_settings = [
+        Chart(
+            'Tasks Due by Priority',
+            Chart.PIE,
+            data_source=['id'],
+            title_source=['priority']
+        )
+    ]
+    def get_queryset(self):
+        today = timezone.now().date()
+        # print(today)# litteraly checking if timezone is accurate and yeah it is xD
+        next_30_days = today + timedelta(days=30)
+        return super().get_queryset().filter(due_by__range=[today, next_30_days], is_urgent=True)
+    
+    
+
+
+
+
+
+
+
+
+
+    
+class UrgentTasksDueReport(ReportView):
+    report_model = Tasks
+    date_field = 'due_by'
+    group_by = 'is_urgent'
+    columns = [
+        'is_urgent',
+        ComputationField.create(Count, 'id','task', verbose_name='Number of Urgent Tasks')
+    ]
+    
+    def get_queryset(self):
+        today = timezone.now().date()
+        next_30_days = today + timedelta(days=30)
+        return super().get_queryset().filter(due_by__range=[today , next_30_days], is_urgent=True)
+
+
+
+
+class AllTasksReportView(ReportView):
+    report_model = Tasks
+    date_field = 'none'
+    columns = [
+        'id',
+        'email',
+        'task',
+        'due_by',
+        'priority',
+        'is_urgent',
+    ]
+    def get_queryset(self):
+        return Tasks.objects.all()
+
+
+

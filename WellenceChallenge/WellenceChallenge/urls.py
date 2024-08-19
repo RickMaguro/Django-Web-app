@@ -12,6 +12,9 @@ urlpatterns = [
     path('password_verify', views.password_verify, name='password_verify'),
     path('DataEntry_add', views.data_entry_add, name='data_entry_add'),
     path('tasks-due-report/', views.TasksDueReport.as_view(), name='tasks_due_report'),
+    path('tasks_priority_due_pie_chart/',views.TasksPriorityDuePieChart.as_view(), name='tasks_priority_due_pie_chart'),
+    path('tasks-urgent-report/', views.UrgentTasksDueReport.as_view(), name='tasks_urgent_report'),
+    path('all_tasks_report/', views.AllTasksReportView.as_view(),name='all_tasks_report'),
 ]
 
 
