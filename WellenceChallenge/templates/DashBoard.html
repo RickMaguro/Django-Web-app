@@ -5,7 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DashBoard</title>
     <link rel="stylesheet" href="static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="static/script/script.js"></script>
+
+    <style>
+        .report-view {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
@@ -17,18 +27,54 @@
             <button onclick="location.href = 'password_verify_link?form=dashboard'">Dashboard</button>
         </div>
     </div>
-    <div class="flexcontainer" style="width: 35%;">
+    <!-- <div class="flexcontainer" style="width: 35%;">
         <button id="tasks-due-btn">Tasks Due</button>
         <button id="tasks-priority-btn">Tasks Priority</button>
         <button id="urgent-tasks-due-btn">Urgent Tasks Due</button>
         <button id="all-tasks-btn">All Tasks</button>
-    </div>
-
+    </div> -->
+<!-- 
     <iframe id="DashBoard_Iframe" src="tasks-due-report" frameborder="0"></iframe>
 
     <script>
         const switcher = new iframeSwitcher();
 
+    </script> -->
+
+
+    <div>
+        <button onclick="showReport('tasksDueReport')">Tasks Due Report</button>
+        <button onclick="showReport('tasksPriorityDuePieChart')">Tasks Priority Due Pie Chart</button>
+        <button onclick="showReport('urgentTasksDueReport')">Urgent Tasks Due Report</button>
+        <button onclick="showReport('allTasksReportView')">All Tasks Report</button>
+    </div>
+
+    <div id="tasksDueReport" class="report-view">
+        {% include 'tasks-due-report.html' %}
+    </div>
+    <div id="tasksPriorityDuePieChart" class="report-view">
+        {% include 'tasks_priority_due_pie_chart/' %}
+    </div>
+    <div id="urgentTasksDueReport" class="report-view">
+        {% include 'urgent_tasks_due_report/' %}
+    </div>
+    <div id="allTasksReportView" class="report-view">
+        {% include 'all_tasks_report/' %}
+    </div>
+
+    <script>
+        function showReport(reportId) {
+            var reports = document.getElementsByClassName('report-view');
+            for (var i = 0; i < reports.length; i++) {
+                reports[i].classList.remove('active');
+            }
+            document.getElementById(reportId).classList.add('active');
+        }
+
+        // Show the first report by default
+        showReport('tasksDueReport');
     </script>
+
+
 </body>
 </html>
