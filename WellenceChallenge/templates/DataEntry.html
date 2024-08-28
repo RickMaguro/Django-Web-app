@@ -38,28 +38,30 @@
         <button type="submit">Submit</button>
     </form>
     <script>
+        // Get the form element and attach a submit event listener
         const form = document.querySelector('form');
         form.addEventListener('submit', async e => {
-            e.preventDefault();
+            e.preventDefault(); // Prevent the default form submission behavior aka switching pages
             try {
+                // Send a POST request to the server with the form data
                 const res = await fetch('/DataEntry_add', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
+                        'Content-Type': 'application/json', // Specify the content type as JSON
+                        'X-CSRFToken': '{{ csrf_token }}' // Include the CSRF token in the request headers (required)
                     },
                     body: JSON.stringify(Object.fromEntries(
                         new FormData(form).entries()
-                    ))
+                    )) // Convert the form data to a JSON string
                 });
-                if (res.ok) {
-                    alert('Task added');
-                    form.reset();
-                } else {
-                    alert('Error adding task');
+                if (res.ok) { // Check if the request was successful
+                    alert('Task added'); // Show a success message
+                    form.reset(); // Reset the form fields
+                } else { // If the request failed
+                    alert('Error adding task'); // Show an error message
                 }
-            } catch (e) {
-                alert(e.message);
+            } catch (e) { // If there was an error
+                alert(e.message); // Show the error message
             }
         });
     </script>

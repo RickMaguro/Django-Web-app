@@ -8,7 +8,12 @@ from django.utils import timezone
 from slick_reporting.views import *
 from slick_reporting.fields import *
 
-# from django.utils import timezone
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def protected_page(request):
+    return render(request, 'protected_page.html')
 
 
 # Create your views here.
@@ -19,64 +24,103 @@ def data_entry(request):
     return render(request, 'DataEntry.html')
 
 def dash_board(request):
-    return render(request, 'DashBoard.html')
+    # try:
+    #     # TasksDueReport_r = TasksDueReport.as_view()(request)
+    #     # TasksPriorityDuePieChart_r = TasksPriorityDuePieChart.as_view()(request)
+    #     # UrgentTasksDueReport_r = UrgentTasksDueReport.as_view()(request)
+    #     # AllTasksReportView_r = AllTasksReportView.as_view()(request)
+
+    #     context = {
+    #         'TasksDueReport_r': TasksDueReport_r,
+    #         'TasksPriorityDuePieChart_r': TasksPriorityDuePieChart_r,
+    #         'UrgentTasksDueReport_r': UrgentTasksDueReport_r,
+    #         'AllTasksReportView_r': AllTasksReportView_r
+    #     }
+        # return render(request, 'DashBoard.html', context)
+        return render(request, 'DashBoard.html')
+
+
 
 def password_verify_link(request):
     return render(request, 'password_verify_link.html')
 
 
-from django.http import JsonResponse
+
 
 def password_verify(request):
+    
+    print(f"password_verify: {request.POST}")
     password = request.POST.get('password')
     current_url = request.POST.get('form')
 
-    # Check if password matches
-    account = Accounts.objects.get(id=1)
-
-    if account.check_password(password):
-        # Redirect to the right page if verification was successful
+    user = authenticate(request, password=password)
+    print(f"authenticate returned: {user}")
+    if user is not None:
+        login(request, user)
+        print("logged in")
         if current_url == 'data_entry':
             data = {'redirect': 'DataEntry'}
-            print("Redirecting")
+            print("Redirecting to data entry")
             response = JsonResponse(data)
-            response.set_cookie('signed_in', 'True')
             return response
         
-
         elif current_url == 'dashboard':
             data = {'redirect': 'DashBoard'}
-            print("Redirecting")
+            print("Redirecting to dashboard")
             response = JsonResponse(data);
-            response.set_cookie('signed_in', 'True')
             return response
         else:
+            print("invalid form")
             data = {'error': 'Invalid form'}
             return JsonResponse(data, status=401)
     else:
+        print("invalid password")
         data = {'error': 'Invalid password'}
         return JsonResponse(data, status=401)
 
-
+@login_required
 def data_entry_add(request):
-    # Get the data from the request's body as a json object
+    # Retrieve the data from the request's body as a json object
     data = json.loads(request.body.decode('utf-8'))
+    
+    # Extract the required fields from the json object
     email = data.get('email')
     task = data.get('task')
     due_by = data.get('due_by')
     priority = data.get('priority')
     is_urgent = data.get('is_urgent')
+    
+    # Convert the 'is_urgent' string to a boolean
     is_urgent = True if is_urgent == 'on' else False
+    
+    # Print the extracted data for debugging purposes
     print("------------------" + str(email), str(task), str(due_by), str(priority), str(is_urgent))
-    # Get the latest id
+    
+    # Retrieve the latest id in the Tasks table
     latest_id = Tasks.objects.latest('id').id
-    # Increment the id by 1
+    
+    # Increment the latest id by 1 to get the new id
     new_id = latest_id + 1
     
-    # Save the new data entry with the new id
-    data_entry = Tasks(id=new_id, email=email, task=task, due_by=due_by, priority=priority, is_urgent=is_urgent)
-    data_entry.save()
-    return JsonResponse({'success': True})
+    # Create a new Tasks object with the new id and the extracted data
+    data_entry = Tasks(
+        id=new_id,
+        email=email,
+        task=task,
+        due_by=due_by,
+        priority=priority,
+        is_urgent=is_urgent
+    )
+    
+    try:
+        # Save the new Tasks object to the database
+        data_entry.save()
+        
+        # Return a JsonResponse with a success message
+        return JsonResponse({'success': True})
+    except Exception as e:
+        # If there is an error while saving the data, return an error message
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 
@@ -100,6 +144,7 @@ class TasksDueReport(ListReportView):
         today = timezone.now()
         next_30_days = today + timezone.timedelta(days=30)
         return super().get_queryset().filter(due_by__range=(today, next_30_days))
+
 
 
 class TasksPriorityDuePieChart(ListReportView):

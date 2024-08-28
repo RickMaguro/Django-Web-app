@@ -131,3 +131,4 @@ STATICFILES_DIRS = [
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'  # or 'bootstrap5', 'uni_form', etc.
 X_FRAME_OPTIONS = 'ALLOWALL'  # or 'ALLOWALL'
+LOGIN_URL = 'password_verify'
