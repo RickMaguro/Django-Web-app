@@ -52,7 +52,53 @@ button:active{
     transform: translateY(5px);
 }
 
+
 iframe{
     width: 100%;
     height: 80vh;
 }
+
+.DataEntry_Flexcontainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.DataEntry_Container{
+    display: flex;
+    width: 30%;
+    min-width: 500px;
+
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+}
+.DataEntry_Container input{
+    border: 1px solid grey;
+}
+.DataEntry_Container input, label, select{
+    width: 100%;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-weight: 300;
+    font-size: large;
+    border-radius: 10px;
+
+}
+.DataEntry_Container *{
+    margin-bottom: 5px;
+}
+
+.DataEntry_Container div{
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-direction: column;
+    width: 50%;
+
+}
+
+.DataEntry_Container div input{
+    width: auto;
+}
+

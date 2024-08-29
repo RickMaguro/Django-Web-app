@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from WellenceApp.models import *
+from WellenceApp.models import Accounts
 from django.http import JsonResponse
 import json
 
@@ -9,76 +10,96 @@ from slick_reporting.views import *
 from slick_reporting.fields import *
 
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-
-@login_required
-def protected_page(request):
-    return render(request, 'protected_page.html')
-
 
 # Create your views here.
 def landing_page(request):
     return render(request, 'index.html')
 
+@login_required
 def data_entry(request):
     return render(request, 'DataEntry.html')
 
+@login_required
 def dash_board(request):
-    # try:
-    #     # TasksDueReport_r = TasksDueReport.as_view()(request)
-    #     # TasksPriorityDuePieChart_r = TasksPriorityDuePieChart.as_view()(request)
-    #     # UrgentTasksDueReport_r = UrgentTasksDueReport.as_view()(request)
-    #     # AllTasksReportView_r = AllTasksReportView.as_view()(request)
-
-    #     context = {
-    #         'TasksDueReport_r': TasksDueReport_r,
-    #         'TasksPriorityDuePieChart_r': TasksPriorityDuePieChart_r,
-    #         'UrgentTasksDueReport_r': UrgentTasksDueReport_r,
-    #         'AllTasksReportView_r': AllTasksReportView_r
-    #     }
-        # return render(request, 'DashBoard.html', context)
-        return render(request, 'DashBoard.html')
+    return render(request, 'DashBoard.html')
 
 
 
 def password_verify_link(request):
-    return render(request, 'password_verify_link.html')
-
-
-
-
-def password_verify(request):
-    
-    print(f"password_verify: {request.POST}")
-    password = request.POST.get('password')
-    current_url = request.POST.get('form')
-
-    user = authenticate(request, password=password)
-    print(f"authenticate returned: {user}")
-    if user is not None:
-        login(request, user)
-        print("logged in")
-        if current_url == 'data_entry':
-            data = {'redirect': 'DataEntry'}
-            print("Redirecting to data entry")
+    """
+    This view is called when the user is redirected to the password verification
+    page. It checks if the user has entered the correct password, and if so, it
+    logs them in and redirects them to the home page.
+    """
+    if request.method == 'POST':
+        # Get the password from the request
+        password = request.POST.get('password')
+        # Get the current URL from the request
+        current_url = request.POST.get('form')
+        # Print the password and current URL for debugging purposes
+        print(f"password: {password} form: {current_url}")
+        # Authenticate the user with the password
+        user = authenticate(request, password=password)
+        # Print the result of the authentication for debugging purposes
+        print(f"authenticate returned: {user}")
+        if user is not None:
+            # If the user is not None, log them in
+            login(request, user)
+            print("logged in")
+            # Create a JsonResponse with a redirect to the home page
+            data = {'redirect': '/'}
+            print("Redirecting to home")
             response = JsonResponse(data)
             return response
-        
-        elif current_url == 'dashboard':
-            data = {'redirect': 'DashBoard'}
-            print("Redirecting to dashboard")
-            response = JsonResponse(data);
-            return response
         else:
-            print("invalid form")
-            data = {'error': 'Invalid form'}
+            # If the user is None, return a JsonResponse with an error message
+            print("invalid password")
+            data = {'message': 'Invalid password'}
             return JsonResponse(data, status=401)
     else:
-        print("invalid password")
-        data = {'error': 'Invalid password'}
-        return JsonResponse(data, status=401)
+        # If the request is not a POST request, render the password verification page
+        return render(request, 'password_verify_link.html')
 
-@login_required
+
+class PasswordOnlyBackend:
+    """
+    This is a custom Django authentication backend that does not use a username,
+    but rather a single password that is stored in the database. If the password
+    is correct, it will log in as the user 'NOT_admin'. If the user does not exist,
+    it will create it.
+    """
+    def authenticate(self, request, password=None):
+        """
+        Authenticates a user based on the password provided. If the password
+        is correct, it will log in as the user 'NOT_admin'. If the user does not
+        exist, it will create it.
+        """
+        RealPassword = Accounts.objects.get(id=1)
+        print(RealPassword)
+        if RealPassword.check_password(password):
+            try:
+                user= User.objects.get(username='NOT_admin')
+                return user
+            except User.DoesNotExist:
+                user = User.objects.create_user(username='NOT_admin', password=password)
+                user.save()
+                return user
+        
+    def get_user(self, user_id):
+        """
+        Returns a user object based on the user_id provided. If the user does not
+        exist, it will return None.
+        """
+        try:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None
+        
+
+
+
 def data_entry_add(request):
     # Retrieve the data from the request's body as a json object
     data = json.loads(request.body.decode('utf-8'))
@@ -123,7 +144,6 @@ def data_entry_add(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
-
 class TasksDueReport(ListReportView):
     report_model = Tasks
     columns = [
@@ -144,7 +164,6 @@ class TasksDueReport(ListReportView):
         today = timezone.now()
         next_30_days = today + timezone.timedelta(days=30)
         return super().get_queryset().filter(due_by__range=(today, next_30_days))
-
 
 
 class TasksPriorityDuePieChart(ListReportView):
