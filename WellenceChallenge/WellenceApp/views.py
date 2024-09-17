@@ -13,6 +13,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
+from WellenceApp.services import TaskService
+
 # Create your views here.
 def landing_page(request):
     return render(request, 'index.html')
@@ -98,50 +100,6 @@ class PasswordOnlyBackend:
             return None
         
 
-
-
-def data_entry_add(request):
-    # Retrieve the data from the request's body as a json object
-    data = json.loads(request.body.decode('utf-8'))
-    
-    # Extract the required fields from the json object
-    email = data.get('email')
-    task = data.get('task')
-    due_by = data.get('due_by')
-    priority = data.get('priority')
-    is_urgent = data.get('is_urgent')
-    
-    # Convert the 'is_urgent' string to a boolean
-    is_urgent = True if is_urgent == 'on' else False
-    
-    # Print the extracted data for debugging purposes
-    print("------------------" + str(email), str(task), str(due_by), str(priority), str(is_urgent))
-    
-    # Retrieve the latest id in the Tasks table
-    latest_id = Tasks.objects.latest('id').id
-    
-    # Increment the latest id by 1 to get the new id
-    new_id = latest_id + 1
-    
-    # Create a new Tasks object with the new id and the extracted data
-    data_entry = Tasks(
-        id=new_id,
-        email=email,
-        task=task,
-        due_by=due_by,
-        priority=priority,
-        is_urgent=is_urgent
-    )
-    
-    try:
-        # Save the new Tasks object to the database
-        data_entry.save()
-        
-        # Return a JsonResponse with a success message
-        return JsonResponse({'success': True})
-    except Exception as e:
-        # If there is an error while saving the data, return an error message
-        return JsonResponse({'error': str(e)}, status=500)
 
 
 class TasksDueReport(ListReportView):

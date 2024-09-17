@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'slick_reporting',
     'crispy_forms',
     'crispy_bootstrap4',
+    'ninja',
     'WellenceApp'
 ]
 
