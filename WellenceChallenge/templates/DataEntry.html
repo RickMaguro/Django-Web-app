@@ -45,30 +45,28 @@
     </div>
 
     <script>
-        // Get the form element and attach a submit event listener
         const form = document.querySelector('form');
         form.addEventListener('submit', async e => {
-            e.preventDefault(); // Prevent the default form submission behavior aka switching pages
+            e.preventDefault();
             try {
-                // Send a POST request to the server with the form data
-                const res = await fetch('/DataEntry_add', {
+                const res = await fetch('/api/tasks', {  
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json', // Specify the content type as JSON
-                        'X-CSRFToken': '{{ csrf_token }}' // Include the CSRF token in the request headers (required)
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
                     },
-                    body: JSON.stringify(Object.fromEntries(
-                        new FormData(form).entries()
-                    )) // Convert the form data to a JSON string
+                    body: JSON.stringify(Object.fromEntries(new FormData(form)))
                 });
-                if (res.ok) { // Check if the request was successful
-                    alert('Task added'); // Show a success message
-                    form.reset(); // Reset the form fields
-                } else { // If the request failed
-                    alert('Error adding task'); // Show an error message
+                if (res.ok) {
+                    const data = await res.json();
+                    alert('Task added: ' + data.id);
+                    form.reset();
+                } else {
+                    const errorData = await res.json();
+                    alert('Error adding task: ' + (errorData.error || 'Unknown error'));
                 }
-            } catch (e) { // If there was an error
-                alert(e.message); // Show the error message
+            } catch (e) {
+                alert('Error: ' + e.message);
             }
         });
     </script>
