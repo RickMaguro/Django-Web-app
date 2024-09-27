@@ -1,0 +1,206 @@
+openapi: 3.0.0
+info:
+  title: Wellence Challenge API
+  version: 1.0.0
+  description: API for managing tasks in the Wellence Challenge application
+paths:
+  /api/tasks/:
+    post:
+      summary: Create a new task
+      operationId: createTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskIn'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskOut'
+        '400':
+          description: Bad request
+        '422':
+          description: Unprocessable entity
+    get:
+      summary: Get list of all tasks
+      operationId: getTasks
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskOut'
+
+  /api/tasks/{task_id}:
+    get:
+      summary: Get details of a specific task
+      operationId: getTask
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskOut'
+        '404':
+          description: Task not found
+
+    put:
+      summary: Update a specific task
+      operationId: updateTask
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskIn'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskOut'
+        '404':
+          description: Task not found
+
+    delete:
+      summary: Delete a specific task
+      operationId: deleteTask
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Task deleted successfully
+        '404':
+          description: Task not found
+
+  /api/tasks-due-report:
+    get:
+      summary: Tasks due report
+      operationId: tasksDueReport
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskOut'
+
+  /api/tasks-priority-due:
+    get:
+      summary: Tasks priority due
+      operationId: tasksPriorityDue
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskOut'
+
+  /api/urgent-tasks-report:
+    get:
+      summary: Urgent tasks report
+      operationId: urgentTasksReport
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskOut'
+
+  /api/all-tasks-report:
+    get:
+      summary: All tasks report with pagination
+      operationId: allTasksReport
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskOut'
+                  total_pages:
+                    type: integer
+                  current_page:
+                    type: integer
+
+components:
+  schemas:
+    TaskIn:
+      type: object
+      properties:
+        # Add properties based on your TaskIn schema
+        title:
+          type: string
+        description:
+          type: string
+        due_by:
+          type: string
+          format: date-time
+    TaskOut:
+      type: object
+      properties:
+        # Add properties based on your TaskOut schema
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        due_by:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
