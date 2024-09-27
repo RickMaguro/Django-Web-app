@@ -4,71 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Entry</title>
-    <link rel="stylesheet" href="static/css/style.css">
-    <script src="static/script/script.js"></script>
-
+    <link rel="stylesheet" href="static/css/DataEntry.css">
 </head>
 <body>
     <div class="flexcontainer NavigationBar">
         <button onclick="location.href = '/'">Home</button>
         <h1>Wellence Challenge</h1>
-        <div>
+        <div class="nav-buttons">
             <button onclick="location.href = '/DataEntry'">Data Entry</button>
             <button onclick="location.href = '/DashBoard'">Dashboard</button>
-
+            <form action="{% url 'logout' %}" method="post" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
         </div>
     </div>
 
     <div class="DataEntry_Flexcontainer">
-            <h1>Data Entry</h1>
-            <form class="DataEntry_Container" method="POST" onSubmit="event.preventDefault();">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email">
-                <label for="task">Task:</label>
-                <input type="text" id="task" name="task">
-                <label for="due_by">Due By:</label>
-                <input type="datetime-local" id="due_by" name="due_by">
-                <label for="priority">Priority:</label>
-                <select id="priority" name="priority">
-                    <option value="1">Low</option>
-                    <option value="2">Medium</option>
-                    <option value="3">High</option>
-                </select>
-                <div>
-                    <label for="is_urgent">Is Urgent:</label>
-                    <input type="checkbox" id="is_urgent" name="is_urgent">
-                </div>
+        <h1>Data Entry</h1>
+        <form id="taskForm" class="DataEntry_Container">
+            {% csrf_token %}
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="task">Task:</label>
+            <input type="text" id="task" name="task" required>
+            
+            <label for="due_by">Due By:</label>
+            <input type="datetime-local" id="due_by" name="due_by" required>
+            
+            <label for="priority">Priority:</label>
+            <select id="priority" name="priority" required>
+                <option value="1">Low</option>
+                <option value="2">Medium</option>
+                <option value="3">High</option>
+            </select>
+            
+            <div>
+                <label for="is_urgent">Is Urgent:</label>
+                <input type="checkbox" id="is_urgent" name="is_urgent">
+            </div>
 
-                <button type="submit">Submit</button>
-            </form>
-
+            <button type="submit">Submit</button>
+        </form>
     </div>
 
-    <script>
-        const form = document.querySelector('form');
-        form.addEventListener('submit', async e => {
-            e.preventDefault();
-            try {
-                const res = await fetch('/api/tasks', {  
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify(Object.fromEntries(new FormData(form)))
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    alert('Task added: ' + data.id);
-                    form.reset();
-                } else {
-                    const errorData = await res.json();
-                    alert('Error adding task: ' + (errorData.error || 'Unknown error'));
-                }
-            } catch (e) {
-                alert('Error: ' + e.message);
-            }
-        });
-    </script>
+    <script src="static/script/DataEntry.js"></script>
 </body>
 </html>

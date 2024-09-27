@@ -4,36 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DashBoard</title>
-    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/Dashboard.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="static/script/script.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
 </head>
 
 <body>
     <div class="flexcontainer NavigationBar">
         <button onclick="location.href = '/'">Home</button>
         <h1>Wellence Challenge</h1>
-        <div>
+        <div class="nav-buttons">
             <button onclick="location.href = '/DataEntry'">Data Entry</button>
             <button onclick="location.href = '/DashBoard'">Dashboard</button>
-
+            <form action="{% url 'logout' %}" method="post" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
         </div>
     </div>
-    <div class="flexcontainer" style="width: 35%;">
-        <button id="tasks-due-btn">Tasks Due</button>
-        <button id="tasks-priority-btn">Tasks Priority</button>
-        <button id="urgent-tasks-due-btn">Urgent Tasks Due</button>
-        <button id="all-tasks-btn">All Tasks</button>
+
+    <h2>Data of tasks due in the next 30 days</h2>
+
+    <div class="dashboard-container">
+        <!-- Urgent Tasks Number Metric -->
+        <div class="urgent-tasks">
+            <h3>Urgent Tasks</h3>
+            <div id="urgentTasksMetric" class="metric">0</div>
+        </div>
+
+        <!-- Pie Chart: Tasks by Priority -->
+        <div class="pie-chart">
+            <h3>Pie by Priorities</h3>
+            <canvas id="tasksPriorityPieChart" class="chart-container"></canvas>
+        </div>
+
+        <!-- Line Chart: Tasks Due in the Next 30 Days -->
+        <div class="line-chart">
+            <h3>Line chart by Due dates</h3>
+            <canvas id="tasksDueLineChart" class="chart-container"></canvas>
+        </div>
+
+        <!-- Table View: All Tasks -->
+        <div class="tasks-table">
+            <h3>Table of task details</h3>
+            <!-- Pagination Controls (Top) -->
+            <div class="pagination" style="text-align: right;">
+                <button id="prevPageTop" onclick="changePage(-1)">Previous</button>
+                <span id="pageInfoTop"></span>
+                <button id="nextPageTop" onclick="changePage(1)">Next</button>
+            </div>
+            <table id="tasksTable">
+                <thead>
+                    <tr>
+                        <th>User Email</th>
+                        <th>Task</th>
+                        <th>Due Date</th>
+                        <th>Priority</th>
+                        <th>Urgent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Task rows will be inserted here -->
+                </tbody>
+            </table>
+            <!-- Pagination Controls (Bottom) -->
+            <div class="pagination" style="text-align: right;">
+                <button id="prevPageBottom" onclick="changePage(-1)">Previous</button>
+                <span id="pageInfoBottom"></span>
+                <button id="nextPageBottom" onclick="changePage(1)">Next</button>
+            </div>
+        </div>
     </div>
 
-    <iframe id="DashBoard_Iframe" src="tasks-due-report" frameborder="0"></iframe>
-
-    <script>
-        const switcher = new iframeSwitcher();
-
-    </script>
-
-
+    <!-- Chart.js Scripts -->
+    <script src="static/script/Dashboard.js"></script>
 </body>
 </html>

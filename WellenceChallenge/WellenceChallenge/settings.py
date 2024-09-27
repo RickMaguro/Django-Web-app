@@ -110,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Europe/London'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -135,6 +135,5 @@ X_FRAME_OPTIONS = 'ALLOWALL'  # or 'ALLOWALL'
 LOGIN_URL = '/password_verify_link'
 
 AUTHENTICATION_BACKENDS = [
-    'WellenceApp.views.PasswordOnlyBackend',
     'django.contrib.auth.backends.ModelBackend',  # Keep the default backend for fallback
 ]
