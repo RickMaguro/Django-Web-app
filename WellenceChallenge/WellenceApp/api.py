@@ -17,6 +17,7 @@ import logging
 api = NinjaAPI()
 logger = logging.getLogger(__name__)
 
+
 # funciton that allows authentication in an async setting
 async def async_auth(request):
     session_key = request.COOKIES.get("sessionid")
@@ -28,6 +29,7 @@ async def async_auth(request):
             return user
     return None
 
+
 # API endpoint: Create a new task
 @api.post("/tasks/", response={201: TaskOut, 400: dict, 422: dict}, auth=async_auth)
 async def create_task(request, task: TaskIn):
@@ -37,13 +39,17 @@ async def create_task(request, task: TaskIn):
     except Exception as e:
         return 422, {"detail": str(e)}
 
+
 # API endpoint: Get list of all tasks
 @api.get("/tasks/", response=List[TaskOut], auth=async_auth)
 async def get_tasks(request):
     now = timezone.now()
-    tasks_queryset = Tasks.objects.filter(due_by__gte=now, due_by__lte=now + timedelta(days=30))
+    tasks_queryset = Tasks.objects.filter(
+        due_by__gte=now, due_by__lte=now + timedelta(days=30)
+    )
     tasks = await sync_to_async(list)(tasks_queryset)
     return [TaskOut.from_orm(task) for task in tasks]
+
 
 # API endpoint: Get details of a specific task
 @api.get("/tasks/{task_id}", response=TaskOut)
@@ -52,6 +58,7 @@ def get_task(request, task_id: int):
         return TaskService.get_task(task_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
 
 # API endpoint: Update a specific task
 @api.put("/tasks/{task_id}/", response={200: TaskOut, 404: dict}, auth=async_auth)
@@ -62,6 +69,7 @@ async def update_task(request, task_id: int, task: TaskIn):
     except Tasks.DoesNotExist:
         return 404, {"detail": "Task not found"}
 
+
 # API endpoint: Delete a specific task
 @api.delete("/tasks/{task_id}/", response={204: None, 404: dict}, auth=async_auth)
 async def delete_task(request, task_id: int):
@@ -70,6 +78,7 @@ async def delete_task(request, task_id: int):
         return 204, None
     except Tasks.DoesNotExist:
         return 404, {"detail": "Task not found"}
+
 
 # API endpoint: Tasks due report (no authentication required)
 @api.get("/tasks-due-report", response=List[TaskOut])
@@ -83,11 +92,13 @@ async def tasks_due_report(request):
     tasks = await get_tasks()
     return [TaskOut.from_orm(task) for task in tasks]
 
+
 # API endpoint: Tasks priority due (no authentication required)
 @api.get("/tasks-priority-due", response=List[TaskOut])
 async def tasks_priority_due(request):
     tasks = await sync_to_async(TaskService.get_priority_due_tasks)()
     return tasks
+
 
 # API endpoint: Urgent tasks report (no authentication required)
 @api.get("/urgent-tasks-report", response=List[TaskOut])
@@ -95,18 +106,19 @@ async def urgent_tasks_report(request):
     tasks = await sync_to_async(TaskService.get_urgent_tasks)()
     return tasks
 
+
 # API endpoint: All tasks report with pagination (no authentication required)
 @api.get("/all-tasks-report", response=dict)
 async def all_tasks_report(request, page: int = 1, page_size: int = 10):
     @sync_to_async
     def get_paginated_tasks():
-        tasks = Tasks.objects.all().order_by('-due_by')
+        tasks = Tasks.objects.all().order_by("-due_by")
         paginator = Paginator(tasks, page_size)
         page_obj = paginator.get_page(page)
         return {
             "tasks": [TaskOut.from_orm(task) for task in page_obj],
             "total_pages": paginator.num_pages,
-            "current_page": page
+            "current_page": page,
         }
 
     return await get_paginated_tasks()

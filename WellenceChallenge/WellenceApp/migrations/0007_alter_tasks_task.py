@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('WellenceApp', '0006_alter_tasks_id'),
+        ("WellenceApp", "0006_alter_tasks_id"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='tasks',
-            name='task',
-            field=models.CharField(max_length=255, verbose_name='Name'),
+            model_name="tasks",
+            name="task",
+            field=models.CharField(max_length=255, verbose_name="Name"),
         ),
     ]

@@ -8,14 +8,15 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class TaskService:
     @staticmethod
     def create_task(task_data: TaskIn) -> TaskOut:
         try:
             task_data_dict = task_data.dict()
-            latest_id = Tasks.objects.latest('id').id if Tasks.objects.exists() else 0
+            latest_id = Tasks.objects.latest("id").id if Tasks.objects.exists() else 0
             new_id = latest_id + 1
-            task_data_dict['id'] = new_id
+            task_data_dict["id"] = new_id
             task = Tasks.objects.create(**task_data_dict)
             return TaskOut.from_orm(task)
         except Exception as e:
@@ -70,7 +71,9 @@ class TaskService:
         # Retrieve priority tasks due in the next 30 days
         today = timezone.now()
         next_30_days = today + timedelta(days=30)
-        tasks = Tasks.objects.filter(due_by__range=(today, next_30_days)).order_by('priority')
+        tasks = Tasks.objects.filter(due_by__range=(today, next_30_days)).order_by(
+            "priority"
+        )
         return [TaskOut.from_orm(task) for task in tasks]
 
     @staticmethod
@@ -78,7 +81,7 @@ class TaskService:
         # Retrieve urgent tasks due in the next 30 days
         today = timezone.now()
         next_30_days = today + timedelta(days=30)
-        tasks = Tasks.objects.filter(due_by__range=(today, next_30_days), is_urgent=True)
+        tasks = Tasks.objects.filter(
+            due_by__range=(today, next_30_days), is_urgent=True
+        )
         return [TaskOut.from_orm(task) for task in tasks]
-
-

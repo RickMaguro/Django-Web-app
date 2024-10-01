@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class WellenceappConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'WellenceApp'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "WellenceApp"

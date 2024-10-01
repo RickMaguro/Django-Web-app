@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('WellenceApp', '0004_rename_email_tasks_email'),
+        ("WellenceApp", "0004_rename_email_tasks_email"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='tasks',
-            name='id',
+            model_name="tasks",
+            name="id",
             field=models.AutoField(primary_key=True, serialize=False),
         ),
     ]
