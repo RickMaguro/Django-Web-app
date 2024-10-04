@@ -1,0 +1,4 @@
+﻿email,task,due_by,priority,is_urgent
+userA@example.com,Test task,2024-10-20T10:00:00Z,3,TRUE
+userB@example.com,Feature development,2024-10-21T14:00:00Z,2,FALSE
+userC@example.com,Web app update,2024-10-22T09:00:00Z,1,FALSE

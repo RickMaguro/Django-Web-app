@@ -14,7 +14,7 @@ class Accounts(models.Model):
 
 
 class Tasks(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     PRIORITY_CHOICES = [
         (1, "Low"),
         (2, "Medium"),
