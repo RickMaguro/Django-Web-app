@@ -32,13 +32,13 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "slick_reporting",
     "crispy_forms",
     "crispy_bootstrap4",
     "ninja",
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -73,7 +74,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "WellenceChallenge.wsgi.application"
+# WSGI_APPLICATION = "WellenceChallenge.wsgi.application"
+ASGI_APPLICATION = "WellenceChallenge.asgi.application"
 
 
 # Database
@@ -132,6 +134,8 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"  # or 'bootstrap5', 'uni_form', etc.
 X_FRAME_OPTIONS = "ALLOWALL"  # or 'ALLOWALL'

@@ -1,0 +1,116 @@
+body {
+    left: 0;
+    margin: 0;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+h1 {
+    text-align: center;
+    width: auto;
+}
+
+.NavigationBar {
+    background-color: #91ffff;
+}
+
+.flexcontainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.flexcontainer > div {
+    display: block;
+    position: relative;
+    height: 100%;
+}
+
+button {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-weight: 600;
+    font-size: large;
+    padding: 10px;
+    margin: 10px;
+    border: 2px solid black;
+    border-radius: 10px;
+    text-decoration: none;
+    outline: none;
+    background-color: #4dfed1;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgb(113, 200, 200);
+}
+
+button:active {
+    transition: 0.1s;
+    transform: translateY(5px);
+}
+
+.DataEntry_Flexcontainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.DataEntry_Container {
+    display: flex;
+    width: 30%;
+    min-width: 500px;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+}
+
+.DataEntry_Container input {
+    border: 1px solid grey;
+}
+
+.DataEntry_Container input, .DataEntry_Container label, .DataEntry_Container select {
+    width: 100%;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-weight: 300;
+    font-size: large;
+    border-radius: 10px;
+}
+
+.DataEntry_Container * {
+    margin-bottom: 5px;
+}
+
+.DataEntry_Container div {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-direction: column;
+    width: 50%;
+}
+
+.DataEntry_Container div input {
+    width: auto;
+}
+
+/* Logout button CSS */
+.nav-buttons button,
+.logout-form {
+    margin-left: 10px;
+}
+
+.logout-button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: #ff3333;
+}
+
+.logout-form {
+    display: inline;
+}
