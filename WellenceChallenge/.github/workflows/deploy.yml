@@ -1,0 +1,46 @@
+name: Build and Deploy to Azure Container Apps
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Login to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    
+    - name: Build and push image to ACR
+      run: |
+        docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/rick:${{ github.sha }}
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/rick:${{ github.sha }}
+    
+    - name: Deploy to Azure Container Apps
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        appSourcePath: ${{ github.workspace }}/WellenceChallenge
+        acrName: internship
+        acrUsername: ${{ secrets.REGISTRY_USERNAME }}
+        acrPassword: ${{ secrets.REGISTRY_PASSWORD }}
+        imageToDeploy: ${{ secrets.REGISTRY_LOGIN_SERVER }}/rick:${{ github.sha }}
+        containerAppName: rick
+        resourceGroup: ${{ secrets.RESOURCE_GROUP }}
+        environmentVariables: |
+          DB_NAME=${{ secrets.DB_NAME }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_HOST=${{ secrets.DB_HOST }}
+          SECRET_KEY=${{ secrets.SECRET_KEY }}
