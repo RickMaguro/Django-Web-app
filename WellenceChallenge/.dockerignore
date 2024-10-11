@@ -1,0 +1,33 @@
+# Ignore Python bytecode
+*.pyc
+*.pyo
+__pycache__
+
+# Ignore virtual environments
+venv/
+env/
+
+# Ignore local database files
+db.sqlite3
+
+# Ignore static and media files (if you're serving them separately)
+staticfiles/
+media/
+
+# Ignore local environment variables
+.env
+
+# Ignore any node_modules if you're using Node.js/React in your project
+node_modules/
+
+# Ignore any coverage reports
+htmlcov/
+.coverage
+
+# Ignore other temporary or IDE-specific files
+*.log
+*.swp
+*.swo
+*.DS_Store
+.idea/
+.vscode/
