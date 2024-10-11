@@ -24,7 +24,7 @@ jobs:
       uses: azure/docker-login@v1
       with:
         login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-        username: ${{ secrets.REGISTRY_USERNAME }}
+        username: internship
         password: ${{ secrets.REGISTRY_PASSWORD }}
     
     - name: Build and push image to ACR
@@ -37,11 +37,11 @@ jobs:
       with:
         appSourcePath: ${{ github.workspace }}/WellenceChallenge
         acrName: internship
-        acrUsername: ${{ secrets.REGISTRY_USERNAME }}
+        acrUsername: internship
         acrPassword: ${{ secrets.REGISTRY_PASSWORD }}
         imageToDeploy: ${{ secrets.REGISTRY_LOGIN_SERVER }}/rick:${{ github.sha }}
         containerAppName: rick
-        resourceGroup: ${{ secrets.RESOURCE_GROUP }}
+        resourceGroup: internship
         environmentVariables: |
           DB_NAME=${{ secrets.DB_NAME }}
           DB_USER=${{ secrets.DB_USER }}
